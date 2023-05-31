@@ -1,0 +1,18 @@
+steps:
+  - name: 'gcr.io/kaniko-project/executor:latest'
+    args:
+      - --destination=${_IMAGE_NAME}:${_IMAGE_TAG_PREFIX}-${_IMAGE_TAG}
+      - --destination=${_IMAGE_NAME}:${_IMAGE_TAG_PREFIX}-latest
+      - --cache=true
+      - --cache-ttl=150h
+  - name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_RUN_SERVICE}
+      - --image
+      - ${_IMAGE_NAME}:${_IMAGE_TAG_PREFIX}-${_IMAGE_TAG}
+      - --region
+      - europe-west1
+timeout: 300s

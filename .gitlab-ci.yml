@@ -1,0 +1,14 @@
+stages:
+  - deploy
+
+deploy-to-prod:
+  stage: deploy
+  image: google/cloud-sdk:alpine
+  only:
+    - master
+  script:
+    - gcloud auth activate-service-account --key-file $GCP_SERVICE_KEY
+    - gcloud config set project $GCP_PROJECT_ID
+    - >
+      gcloud builds submit . --config=cloudbuild.yaml --region=europe-west1
+      --substitutions _IMAGE_NAME="${IMAGE_NAME}",_IMAGE_TAG_PREFIX="prod",_IMAGE_TAG="${CI_COMMIT_SHORT_SHA}",_RUN_SERVICE="landing-prod"
